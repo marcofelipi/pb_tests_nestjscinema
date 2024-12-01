@@ -20,7 +20,7 @@ jobs:
 
       - name: Run Newman Collection
         run: |
-          newman run tests/postman/API_Cinema.postman_collection.json -e tests/postman/Ambiente_cinema.postman_environment.json -r htmlextra --reporter-htmlextra-export .\newman_report.html
+          newman run tests/newman/API_Cinema.postman_collection.json -e tests/newman/Ambiente_cinema.postman_environment.json -r htmlextra --reporter-htmlextra-export tests/reports/newman_report.html
 
       - name: Upload Newman Report
         uses: actions/upload-artifact@v3
