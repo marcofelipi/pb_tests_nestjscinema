@@ -137,6 +137,13 @@ Cenário: O usuário deseja reservar ingressos para assistir a um filme em um ci
 | /tickets  | Reservar ingresso com preço fora do intervalo | POST /tickets              | Status 400 - Erro de validação                    |
 | /tickets  | Reservar ingresso com assento fora do intervalo | POST /tickets            | Status 400 - Erro de validação                    |
 | /tickets  | Reservar ingresso sem informar todos os campos obrigatórios | POST /tickets | Status 400 - Erro de validação                    |
+| /tickets  | Listar todos os ingressos reservados          | GET /tickets               | Status 200 - Lista de ingressos retornada         |
+| /tickets  | Buscar ingresso por ID existente              | GET /tickets/{id}          | Status 200 - Detalhes do ingresso retornados      |
+| /tickets  | Buscar ingresso por ID inexistente            | GET /tickets/{id}          | Status 404 - Ingresso não encontrado              |
+| /tickets  | Atualizar ingresso com sucesso                | PUT /tickets/{id}          | Status 200 - Ingresso atualizado com sucesso      |
+| /tickets  | Atualizar ingresso com dados inválidos        | PUT /tickets/{id}          | Status 400 - Erro de validação                    |
+| /tickets  | Excluir ingresso existente                    | DELETE /tickets/{id}       | Status 204 - Ingresso removido                    |
+| /tickets  | Excluir ingresso inexistente                  | DELETE /tickets/{id}       | Status 404 - Ingresso não encontrado              |
 | /movies   | Criar novo filme com sucesso                  | POST /movies               | Status 201 - Filme criado com sucesso             |
 | /movies   | Criar filme com título já existente           | POST /movies               | Status 400 - Erro de validação                    |
 | /movies   | Listar todos os filmes                        | GET /movies                | Status 200 - Lista de filmes retornada            |
@@ -148,275 +155,220 @@ Cenário: O usuário deseja reservar ingressos para assistir a um filme em um ci
 | /movies   | Excluir filme inexistente                     | DELETE /movies/{id}        | Status 404 - Filme não encontrado                 |
 
 
+### Rota Movies
 
-### Rota Usuários
+Nesta suíte de testes, o foco será criar, listar, atualizar e deletar filmes na API.
 
-#### Cadastro de Usuário (POST)
+![Mapa mental da rota Movies](/img/mapa_movies.png)
+
+#### Cadastro de filmes (POST)
 **Objetivo:**
-  - Cadastrar no sistema usuários com dados válidos.
+  - Cadastrar no sistema filmes com dados válidos.
 
-**Cenário: Cadastro de usuário com sucesso**
+**Cenário: Criar novo filme com sucesso**
 ```gherkin
-Dado que o usuário está autenticado como administrador
+Dado que o usuário está autenticado
 Quando enviar um pedido de cadastro de usuário com dados válidos
 Então o usuário deve ser criado com sucesso e receber status 201
 ```
 
-**Cenário: Cadastro de usuário com dados inválidos**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de cadastro de usuário com dados inválidos
-Então o sistema deve retornar erro e status 400
-```
-
-**Cenário: Cadastro de usuário com email repetido**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de cadastro de usuário com email repetido
-Então o sistema deve retornar erro e status 400
-```
-
-**Cenário: Cadastro de usuário com provedor inválido**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de cadastro de usuário com provedor gmail ou hotmail
-Então o sistema deve retornar erro e status 400
-```
-
-**Cenário: Cadastro de usuário com senha inválida**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de cadastro de usuário com senha menor que 5 ou maior que 10 caracteres
-Então o sistema deve retornar erro e status 400
-```
-
-#### Listagem de Usuário (GET)
-**Objetivo:**
-  - Listar os usuários do sistema.
-
-**Cenário: Listar todos os usuários**
-```gherkin
-Quando enviar um pedido para listar usuários
-Então o sistema deve retornar todos os usuários cadastrados com status 200
-```
-**Cenário: Listar usuário com ID existente**
-```gherkin
-Dado que o ID do usuário informado existe no sistema
-Quando enviar um pedido para listar este usuário por ID
-Então o sistema deve retornar o usuário com o ID especificado e status 200
-```
-**Cenário: Listar usuário com ID inexistente**
-```gherkin
-Dado que o ID do usuário informado não existe no sistema
-Quando enviar um pedido para listar este usuário por ID
-Então o sistema deve retornar erro e status 400
-```
-
-#### Atualização de Usuário (PUT)
-**Objetivo:**
-  - Atualizar as informações de um usuário.
-
-**Cenário: Atualizar usuário corretamente**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de atualização com dados válidos
-Então o usuário deve ser atualizado com sucesso e receber status 200
-```
-**Cenário: Atualizar usuário incorretamente**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de atualização com dados inválidos
-Então o sistema deve retornar erro e status 403
-```
-
-#### Deletar Usuário (DELETE)
-**Objetivo:**
-  - Remover um usuário do sistema.
-
-**Cenário: Deletar usuário corretamente**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido para deletar um usuário existente
-Então o usuário deve ser removido com sucesso e receber status 200
-```
-
-**Cenário: Deletar usuário com carrinho existente**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido para deletar um usuário com carrinho existente
-Então o sistema deve retornar erro e status 400
-```
-
-### Rota Login 
-
-Nesta suíte de testes, o foco será logar e autenticar os usuários previamente cadastrados. Primeiramente, é necessário acessar https://compassuol.serverest.dev/ para a realização dos testes.
-
-#### Login de usuários (POST)
-
-**Objetivo:**
-  - Entrar no sistema usando usuários com e-mail e senha válidos.
-
-**Cenário: Login de usuário com cadastro válido**
-```gherkin
-Dado que o usuário está cadastrado corretamente no sistema
-Quando enviar um pedido de login de usuário com dados válidos
-Então o usuário deve ser autenticado com sucesso e receber status 200, com bearer token válido por 10 minutos
-```
-
-**Cenário: Login de usuário com credenciais inválidas**
-```gherkin
-Quando enviar um pedido de login com credenciais inválidas
-Então o sistema deve retornar erro e status 401
-```
-### Rota Produtos
-
-Nesta suíte de testes, o foco será criar, listar, atualizar e deletar produtos, usando um usuário cadastrado e autenticado. Primeiramente, é necessário acessar https://compassuol.serverest.dev/ para a realização dos testes.
-
-#### Cadastro de Produtos (POST)
-**Objetivo:**
-  - Com um usuário cadastrado e autenticado, cadastrar produtos no sistema.
-
-**Cenário: Cadastro de produto com sucesso**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de cadastro de produto com dados válidos
-Então o produto deve ser criado com sucesso e receber status 201
-```
-**Cenário: Cadastro de um novo produto com dados inválidos**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de cadastro de produto com dados inválidos
-Então o sistema deve retornar erro e status 400
-```
-
-#### Listagem de Produtos (GET)
-- **Objetivo:**
-  - Listar os produtos do sistema.
-
-**Cenário: Listar todos os produtos**
-```gherkin
-Quando enviar um pedido para listar produtos
-Então o sistema deve retornar todos os produtos cadastrados com status 200
-```
-
-**Cenário: Listar produto com ID existente**
-```gherkin
-Quando enviar um pedido para buscar um produto com ID existente
-Então o sistema deve retornar o produto com status 200
-```
-
-**Cenário: Listar produto com ID inexistente**
-```gherkin
-Quando enviar um pedido para buscar um produto com ID inexistente
-Então o sistema deve retornar erro e status 400
-```
-
-#### Atualização de Produto (PUT)
-**Objetivo:**
-  - Atualizar as informações de um produto.
-
-**Cenário: Atualizar produto corretamente**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de atualização com dados válidos
-Então o produto deve ser atualizado com sucesso e receber status 200
-```
-
-**Cenário: Atualizar produto incorretamente**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de atualização com dados inválidos
-Então o sistema deve retornar erro e status 400
-```
-
-#### Deletar Produto (DELETE)
-**Objetivo:**
-  - Remover um produto da aplicação.
-
-**Cenário: Deletar produto corretamente**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido para deletar um produto existente
-Então o produto deve ser removido com sucesso e receber status 200
-```
-
-**Cenário: Deletar produto dentro de carrinho**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido para deletar um produto existente em um carrinho
-Então o sistema deve retornar erro e status 400
-```
-
-**Cenário: Deletar produto com usuário não autenticado**
-```gherkin
-Dado que o usuário não está autenticado como administrador
-Quando enviar um pedido para deletar um produto
-Então o sistema deve retornar erro e status 401
-```
-
-### Rota Carrinhos
-
-Nesta suíte de testes, o foco será criar, listar e deletar carrinhos, usando um usuário cadastrado e autenticado. Primeiramente, é necessário acessar https://compassuol.serverest.dev/ para a realização dos testes.
-
-#### Listagem de Carrinhos (GET)
-**Objetivo:**
-  - Listar os carrinhos do sistema.
-
-**Cenário: Listar todos os carrinhos**
-```gherkin
-Quando enviar um pedido para listar carrinhos
-Então o sistema deve retornar todos os carrinhos cadastrados com status 200
-```
-
-**Cenário: Listar um carrinho por ID**
-```gherkin
-Quando enviar um pedido para listar um carrinho com ID válido
-Então o sistema deve retornar o carrinho cadastrado com status 200
-```
-
-**Cenário: Listar um carrinho não existente**
-```gherkin
-Quando enviar um pedido para listar um carrinho com ID inválido
-Então o sistema deve retornar erro e status 400
-```
-
-#### Cadastro de Carrinhos (POST)
-**Objetivo:**
-  - Com um usuário cadastrado e autenticado, cadastrar carrinhos no sistema.
-
-**Cenário: Cadastrar carrinho corretamente**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de cadastro de carrinho com dados válidos
-Então o carrinho deve ser adicionado com sucesso e status 200
-```
-
-**Cenário: Cadastrar carrinho com dados inválidos**
-```gherkin
-Dado que o usuário está autenticado como administrador
-Quando enviar um pedido de cadastro de carrinho com dados inválidos
-Então o sistema deve retornar erro e status 400
-```
-
-#### Remoção de Carrinhos (DELETE)
-**Objetivo:**
-  - Remover um carrinho da aplicação, seja por concluir a venda ou por cancelar a venda.
-
-**Cenário: Deletar carrinho concluindo compra**
+**Cenário: Criar filme com título já existente**
 ```gherkin
 Dado que o usuário está autenticado
-Quando enviar um pedido para deletar um carrinho existente
-Então o carrinho deve ser removido com sucesso e receber status 200
+Quando enviar um pedido de cadastro de filme com título repetido
+Então o sistema deve retornar erro e status 400
 ```
-**Cenário: Deletar carrinho cancelando compra**
+
+**Cenário: Criar filme com dados inválidos**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição POST para a rota de filmes com dados inválidos  
+Então o sistema deve retornar um erro e status 400  
+```
+
+#### Listagem de Filme (GET)
+**Objetivo:**
+  - Listar os filmes do sistema.
+
+**Cenário: Listar todos os filmes**
+```gherkin
+Quando enviar uma requisição GET para a rota de filmes  
+Então o sistema deve retornar todos os filmes cadastrados com status 200  
+```
+
+**Cenário: Listar filme com ID existente**
+```gherkin
+Dado que o ID do filme informado existe no sistema  
+Quando enviar uma requisição GET para a rota de filmes com este ID  
+Então o sistema deve retornar o filme correspondente com status 200  
+```
+
+**Cenário: Listar filme com ID inexistente**
+```gherkin
+Dado que o ID do filme informado não existe no sistema
+Quando enviar um pedido para listar este filme por ID
+Então o sistema deve retornar erro e status 400
+```
+
+#### Atualização de Filmes (PUT)
+**Objetivo:**
+  - Atualizar as informações de um filme.
+
+**Cenário: Atualizar filme corretamente**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição PUT para a rota de filmes com dados válidos  
+Então o sistema deve atualizar o filme e retornar status 200  
+```
+**Cenário: Atualizar filme com dados inválidos**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição PUT para a rota de filmes com dados inválidos  
+Então o sistema deve retornar um erro e status 400  
+```
+
+#### Deletar Filme (DELETE)
+**Objetivo:**
+  - Remover um filme do sistema.
+
+**Cenário: Deletar filme corretamente**
+```gherkin
+Dado que o usuário está autenticado como administrador
+Quando enviar um pedido para deletar um filme existente
+Então o filme deve ser removido com sucesso e receber status 200
+```
+
+**Cenário: Deletar usuário com ID inexistente**
+```gherkin
+Dado que o usuário está autenticado como administrador
+Quando enviar um pedido para deletar um filme com ID inexistente
+Então o sistema deve retornar erro e status 400
+```
+
+### Rota Tickets
+
+Nesta suíte de testes, o foco será criar, listar, atualizar e deletar tickets na API.
+
+![Mapa mental da rota Tickets](/img/mapa_tickets.png)
+
+#### Cadastro de Tickets (POST)
+
+**Objetivo:**
+  - Cadastrar novos tickets no sistema.
+
+**Cenário: Reservar ingresso com sucesso**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição POST para a rota /tickets com dados válidos  
+Então o sistema deve reservar o ingresso e retornar status 201  
+```
+
+**Cenário: Reservar ingresso com campos inválidos**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição POST para a rota /tickets com campos inválidos  
+Então o sistema deve retornar um erro de validação com status 400  
+```
+
+**Cenário: Cenário: Reservar ingresso com preço fora do intervalo**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição POST para a rota /tickets com preço fora do intervalo permitido  
+Então o sistema deve retornar um erro de validação com status 400  
+```
+
+**Cenário: Reservar ingresso com assento fora do intervalo**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição POST para a rota /tickets com assento fora do intervalo permitido  
+Então o sistema deve retornar um erro de validação com status 400  
+```
+
+**Cenário: Reservar ingresso sem informar todos os campos obrigatórios**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição POST para a rota /tickets sem todos os campos obrigatórios  
+Então o sistema deve retornar um erro de validação com status 400
+```
+#### Listagem de Tickets (GET)
+
+**Objetivo:**
+  - Listar os tickets existentes no sistema.
+
+**Cenário: Listar todos os ingressos**
+```gherkin
+Quando enviar uma requisição GET para a rota /tickets
+Então o sistema deve retornar todos os ingressos reservados com status 200  
+```
+
+**Cenário: Listar ingresso com ID válido**
 ```gherkin
 Dado que o usuário está autenticado
-Quando enviar um pedido para deletar um carrinho não existente
-Então deve retornar nenhum registro excluído e receber status 200
+E o ticket ID existe no sistema 
+Quando enviar uma requisição GET para a rota /tickets
+Então o sistema deve retornar o ingresso do ID com status 200
 ```
+
+**Cenário: Listar ingresso com ID inválido**
+```gherkin
+Dado que o usuário está autenticado
+E o ticket ID não existe no sistema 
+Quando enviar uma requisição GET para a rota /tickets
+Então o sistema deve retornar erro status 400
+```
+#### Atualização de Tickets (PUT)
+
+**Objetivo:**
+  - Atualizar tickets existentes no sistema.
+
+**Cenário: Atualizar ingresso existente**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição PUT para a rota de ingressos com dados válidos  
+Então o sistema deve atualizar o ingresso e retornar status 200   
+```
+
+**Cenário: Atualizar ingresso inexistente**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição PUT para a rota de ingressos com dados de um ticket inexistente  
+Então deve retornar erro 400
+```
+
+**Cenário: Atualizar ingresso com dados inválidos**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição PUT para a rota de ingressos com dados inválidos  
+Então o sistema deve retornar um erro e status 400  
+```
+
+#### Remoção de Tickets (DELETE)
+
+**Objetivo:**
+  - Remover um ingresso reservado do sistema.
+
+**Cenário: Deletar ingresso existente**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição DELETE para a rota de ingressos com um ID válido  
+Então o sistema deve remover o ingresso e retornar status 200  
+```
+
+**Cenário: Deletar ingresso inexistente**
+```gherkin
+Dado que o usuário está autenticado  
+Quando enviar uma requisição DELETE para a rota de ingressos com um ID inexistente  
+Então o sistema deve retornar um erro e status 404  
+```
+### Testes de Performance
+
+![alt text](/img/mapa_performance.png)
+
 ### Testes de fluxos
+
 ![alt text](image.png)
-**Fluxo: Compra com sucesso com usuário administrador**
+
+**Fluxo: Cria filme e gera ticket**
 ```gherkin
 Dado que o usuário está autenticado e é administrador
 Quando enviar uma requisição para cadastrar carrinho e concluir compra
