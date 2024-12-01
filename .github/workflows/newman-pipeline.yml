@@ -1,0 +1,34 @@
+name: Run Newman Tests Daily
+
+on:
+  schedule:
+    # Executa a cada 24 horas (ajustável)
+    - cron: '0 2 * * *'  # 2:00 AM UTC todos os dias
+  workflow_dispatch:  # Permite disparar manualmente o workflow se necessário
+
+jobs:
+  newman:
+    runs-on: windows-latest
+
+    steps:
+      # Checkout do código
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Instalar o Newman
+      - name: Install Newman
+        run: choco install nodejs-lts
+        run: npm install -g newman
+        run: npm i newman-reporter-htmlextra
+
+      # Rodar os testes do Newman
+      - name: Run Newman Collection
+        run: |
+          newman run tests/newman/API_Cinema.postman_collection.json -e tests/newman/Ambiente_cinema.postman_environment.json -r htmlextra --reporter-htmlextra-export tests/reports/newman_report.html
+
+      # # (Opcional) Fazer upload do relatório gerado como artefato
+      # - name: Upload Newman Report
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: newman-report
+      #     path: ./newman_report.html

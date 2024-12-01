@@ -17,7 +17,7 @@ Neste projeto, foram feitos múltiplos testes na API Cinema
 
 ## Plano de testes
 
-Disponível em: https://gitlab.com/marcoadiasfelipi/pb_sprints/-/blob/pb_sprint5/sprint-5/src/plano_testes_api_servrest.md?ref_type=heads
+Disponível em: https://github.com/marcofelipi/pb_tests_nestjscinema/blob/main/plano_testes.md
 
 ## Sprints
 
