@@ -18,8 +18,8 @@ jobs:
       # Instalar o Newman
       - name: Install Newman
         run: choco install nodejs-lts
-        run: npm install -g newman
-        run: npm i newman-reporter-htmlextra
+        npm install -g newman
+        npm i newman-reporter-htmlextra
 
       # Rodar os testes do Newman
       - name: Run Newman Collection
