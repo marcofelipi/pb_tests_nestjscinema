@@ -1,29 +1,29 @@
-name: Run Newman Tests Daily
+# name: Run Newman Tests Daily
 
-on:
-  schedule:
-    - cron: '0 2 * * *'  # 2:00 AM UTC todos os dias
-  workflow_dispatch:  # Permite executar manualmente o workflow
+# on:
+#   schedule:
+#     - cron: '0 2 * * *'  # 2:00 AM UTC todos os dias
+#   workflow_dispatch:  # Permite executar manualmente o workflow
 
-jobs:
-  newman:
-    runs-on: windows-latest  # Usando Windows como ambiente
+# jobs:
+#   newman:
+#     runs-on: windows-latest  # Usando Windows como ambiente
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
 
-      - name: Install Node.js and Newman
-        run: |
-          choco install nodejs-lts  # Instalando Node.js no Windows usando o Chocolatey
-          npm install -g newman newman-reporter-htmlextra  # Instalando o Newman
+#       - name: Install Node.js and Newman
+#         run: |
+#           choco install nodejs-lts  # Instalando Node.js no Windows usando o Chocolatey
+#           npm install -g newman newman-reporter-htmlextra  # Instalando o Newman
 
-      - name: Run Newman Collection
-        run: |
-          newman run tests/newman/API_Cinema.postman_collection.json -e tests/newman/Ambiente_cinema.postman_environment.json -r htmlextra --reporter-htmlextra-export tests/reports/newman_report.html
+#       - name: Run Newman Collection
+#         run: |
+#           newman run tests/newman/API_Cinema.postman_collection.json -e tests/newman/Ambiente_cinema.postman_environment.json -r htmlextra --reporter-htmlextra-export tests/reports/newman_report.html
 
-      - name: Upload Newman Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: newman-report
-          path: .\newman_report.html  # Fazendo o upload do relatório gerado
+#       - name: Upload Newman Report
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: newman-report
+#           path: .\newman_report.html  # Fazendo o upload do relatório gerado
